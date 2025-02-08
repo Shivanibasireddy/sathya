@@ -7,33 +7,34 @@ function Fruits() {
     const dispatch = useDispatch();
     const fruits = useSelector(state => state.products.fruits);
     const [filters, setFilters] = useState({ all: true, below100: false, above100: false });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
-    // Handle checkbox selection
     const handleFilterChange = (filter) => {
         setFilters((prev) => {
             const updatedFilters = { ...prev, [filter]: !prev[filter] };
 
-            // If "Show All" is checked, reset all other filters
             if (filter === "all" && !prev.all) {
                 return { all: true, below100: false, above100: false };
             }
-
-            // If any other filter is checked, uncheck "Show All"
             if (filter !== "all") {
                 updatedFilters.all = false;
             }
-
-            // If no specific filter is selected, reset to "Show All"
             if (!updatedFilters.below100 && !updatedFilters.above100) {
                 updatedFilters.all = true;
             }
-
             return updatedFilters;
         });
     };
 
-    // Filter fruits based on selected checkboxes
+    const handleSearch = () => {
+        setSearchQuery(searchTerm.toLowerCase());
+    };
+
     const filteredItems = fruits.filter((item) => {
+        if (searchQuery && !item.name.toLowerCase().includes(searchQuery)) {
+            return false;
+        }
         if (filters.all) return true;
         if (filters.below100 && item.price < 100) return true;
         if (filters.above100 && item.price >= 100) return true;
@@ -43,6 +44,18 @@ function Fruits() {
     return (
         <div className="container mt-4">
             <h1 className="text-center mb-4 text-success">Fruits</h1>
+            
+            {/* Search Bar */}
+            <div className="d-flex justify-content-center mb-3">
+                <input 
+                    type="text" 
+                    className="form-control w-50 me-2" 
+                    placeholder="Search fruits..." 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="btn btn-success" onClick={handleSearch}>Search</button>
+            </div>
 
             {/* Filter Checkboxes */}
             <div className="d-flex justify-content-center mb-3">

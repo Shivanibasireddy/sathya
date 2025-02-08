@@ -5,25 +5,26 @@ import { addToCart } from "./Store";
 
 function VegItems() {
     const dispatch = useDispatch();
-    const vegItems = useSelector(state => state.products.vegItem);
-    const [filters, setFilters] = useState({ all: true, below100: false, above100: false });
+    const vegItems = useSelector(state => state.products.vegItem); // Ensure correct state path
 
-    // Handle checkbox changes
+    const [filters, setFilters] = useState({ all: true, below100: false, above100: false });
+    const [pageNumber, setPageNumber] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const perPage = 3;
+    
+    // Handle checkbox filters
     const handleFilterChange = (filter) => {
         setFilters(prev => {
             const newFilters = { ...prev, [filter]: !prev[filter] };
 
-            // If "Show All" is checked, uncheck all price filters
             if (filter === "all" && newFilters.all) {
                 return { all: true, below100: false, above100: false };
             }
 
-            // If any price filter is checked, uncheck "Show All"
             if (filter !== "all") {
                 newFilters.all = false;
             }
 
-            // If no price filter is selected, reset to "Show All"
             if (!newFilters.below100 && !newFilters.above100) {
                 newFilters.all = true;
             }
@@ -32,7 +33,7 @@ function VegItems() {
         });
     };
 
-    // Filter items based on selected checkboxes
+    // Filter items based on checkboxes
     const filteredItems = vegItems.filter(item => {
         if (filters.all) return true;
         if (filters.below100 && item.price < 100) return true;
@@ -40,21 +41,42 @@ function VegItems() {
         return false;
     });
 
+    // Search Function
+    const handleSearch = () => {
+        setPageNumber(1); // Reset to first page on search
+    };
 
-    let VegItems=useSelector(state=>state.vegItem)
-    let perPage=3;
-    let totalPages=vegItems.length/perPage;
-    let [pageNumber,setPageNumber]=useState(1);
-    let pageEndIndex=perPage*pageNumber;
-    let pageStartIndex=pageEndIndex-perPage;
-    let currentItems=vegItems.Slice(pageStartIndex,pageEndIndex);
-    let handlePage=((page)=>{
-        setPageNumber(page);
-    })
+    const searchedItems = filteredItems.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Pagination Logic
+    const totalPages = Math.ceil(searchedItems.length / perPage);
+    const pageStartIndex = (pageNumber - 1) * perPage;
+    const pageEndIndex = pageStartIndex + perPage;
+    const currentItems = searchedItems.slice(pageStartIndex, pageEndIndex);
+
+    const handlePage = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setPageNumber(page);
+        }
+    };
 
     return (
         <div className="container mt-4">
             <h1 className="text-center mb-4 text-success">Vegetables</h1>
+
+            {/* Search Bar */}
+            <div className="input-group mb-3 w-50 mx-auto">
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search for a vegetable..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+            </div>
 
             {/* Checkbox Filters */}
             <div className="mb-4 d-flex justify-content-center gap-3">
@@ -98,8 +120,8 @@ function VegItems() {
 
             {/* Vegetable List */}
             <div className="row g-4">
-                {filteredItems.length > 0 ? (
-                    filteredItems.map((item, index) => (
+                {currentItems.length > 0 ? (
+                    currentItems.map((item, index) => (
                         <div key={index} className="col-md-4">
                             <div className="card shadow-sm border-success h-100">
                                 <img 
@@ -125,27 +147,35 @@ function VegItems() {
                 )}
             </div>
 
-            <ul>
-                {currentItems.map((item,index)=>{
-                    <li>{item}</li>
-                })
-                }
-            </ul>
-            <button onClick={()=>{handlePage(pageNumber-1)}}>Prev</button>
-            <ul>
-                {Array.from({length:totalPages},
-                    (_,index)=>{
-                        <button onClick={handlePage(index+1)}>{index+1}</button>
-                    }
-                )
-                }
-            </ul>
+            {/* Pagination */}
+            <div className="d-flex justify-content-center align-items-center mt-4">
+                <button 
+                    className="btn btn-outline-primary mx-2" 
+                    disabled={pageNumber === 1} 
+                    onClick={() => handlePage(pageNumber - 1)}
+                >
+                    Prev
+                </button>
 
-            <button onClick={()=>{handlePage(pageNumber+1)}}>Next</button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button 
+                        key={index} 
+                        className={`btn mx-1 ${pageNumber === index + 1 ? "btn-primary" : "btn-outline-primary"}`}
+                        onClick={() => handlePage(index + 1)}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
 
+                <button 
+                    className="btn btn-outline-primary mx-2" 
+                    disabled={pageNumber === totalPages} 
+                    onClick={() => handlePage(pageNumber + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
-
-
     );
 }
 

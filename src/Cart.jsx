@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Table, Container, Form, Alert } from "react-bootstrap";
-import { clearCart, decrement, increment, remove } from "./Store";
+import { clearCart, completePurchase, decrement, increment, remove } from "./Store";
 
 function Cart() {
     let cartObjects = useSelector(state => state.cart);
@@ -39,11 +39,8 @@ function Cart() {
 
     let couponDiscountAmount = (totalPrice * couponDiscountPercentage) / 100;
 
-
-
-
-
     let handleCompletePurchase=()=>{
+        
         const purchaseDate=new Date().toLocaleDateString();
         let purchaseDetailsObject={
             date:purchaseDate,
@@ -73,7 +70,7 @@ function Cart() {
                             {cartObjects.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item.name}</td>
-                                    <td>${item.price.toFixed(2)}</td>
+                                    <td>{item.price}</td>
                                     <td>{item.quantity}</td>
                                     <td>
                                         <Button variant="success" size="sm" onClick={() => dispatch(increment(item))}>+</Button>
@@ -87,16 +84,16 @@ function Cart() {
                         </tbody>
                     </Table>
 
-                    <h4 className="text-danger">Total Price: ${totalPrice.toFixed(2)}</h4>
+                    <h4 className="text-danger">Total Price: ₹{totalPrice.toFixed(2)}</h4>
 
                     {discountPercentage > 0 && (
                         <Alert variant="success">
                             <p>Discount Applied: {discountPercentage}%</p>
-                            <p>Discount Amount: ${discountAmount.toFixed(2)}</p>
+                            <p>Discount Amount: ₹{discountAmount.toFixed(2)}</p>
                         </Alert>
                     )}
 
-                    <h4 className="text-primary">Final Amount: ${finalPrice.toFixed(2)}</h4>
+                    <h4 className="text-primary">Final Amount: ₹{finalPrice.toFixed(2)}</h4>
 
                     <div className="d-flex gap-2 my-3">
                         <Button variant="outline-success" onClick={() => { setDiscountPercentage(10); }}>Apply 10% Discount</Button>
@@ -119,7 +116,7 @@ function Cart() {
                     {showCouponApplied && (
                         <Alert variant="info">
                             <p>Coupon Applied: {coupon}</p>
-                            <p>Coupon Discount: ${couponDiscountAmount.toFixed(2)}</p>
+                            <p>Coupon Discount: ₹{couponDiscountAmount.toFixed(2)}</p>
                         </Alert>
                     )}
 
@@ -129,7 +126,7 @@ function Cart() {
                     </div>
                 </>
             ) : (
-                <Alert variant="warning" className="text-center">Your Cart is Empty...</Alert>
+                <Alert variant="warning" className="text-center">Oops......!😱 Your Cart is Empty...</Alert>
             )}
         </Container>
     );

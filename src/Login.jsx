@@ -9,8 +9,9 @@ function Login() {
   let navigate = useNavigate();
 
   let loginCheck = () => {
-    if (username.current.value === "Shivani" && password.current.value === "vani@85") {
-      dispatch(loginCheck(username.current.value));
+    if (username.current.value === "Shivani" && password.current.value === "vani@885") {
+      dispatch({ type: "LOGIN", payload: username.current.value });
+
       navigate("Home");
     } else {
       alert("Your credentials are wrong, please check once!");
@@ -18,11 +19,13 @@ function Login() {
   };
 
   return (
+    <>
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card shadow-lg p-4" style={{ maxWidth: "400px", width: "100%", borderRadius: "15px", backgroundColor: "#f0f8ff" }}>
+        <p> Welcome to login page here you can give Your Credentials...</p>
         <h3 className="text-center mb-4 text-primary">Login</h3>
         <div className="mb-3">
-          <label htmlFor="username" className="form-label text-success">Username</label>
+          <label htmlFor="username" className="form-label text-success"><i class="fas fa-user"></i> Username</label>
           <input
             type="text"
             ref={username}
@@ -33,7 +36,7 @@ function Login() {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="password" className="form-label text-danger">Password</label>
+          <label htmlFor="password" className="form-label text-danger"><i class="fas fa-key"></i> Password</label>
           <input
             type="password"
             ref={password}
@@ -48,6 +51,7 @@ function Login() {
         </button>
       </div>
     </div>
+    </>
   );
 }
 

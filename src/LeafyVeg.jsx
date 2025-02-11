@@ -10,10 +10,6 @@ function LeafyVeg() {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Pagination State
-    const itemsPerPage = 3;
-    const [currentPage, setCurrentPage] = useState(1);
-
     const handleFilterChange = (filter) => {
         setFilters((prev) => {
             const updatedFilters = { ...prev, [filter]: !prev[filter] };
@@ -29,13 +25,10 @@ function LeafyVeg() {
             }
             return updatedFilters;
         });
-
-        setCurrentPage(1); // Reset to first page on filter change
     };
 
     const handleSearch = () => {
         setSearchQuery(searchTerm.toLowerCase());
-        setCurrentPage(1); // Reset to first page on search
     };
 
     const filteredItems = leafyVeg.filter((item) => {
@@ -47,12 +40,6 @@ function LeafyVeg() {
         if (filters.above100 && item.price >= 100) return true;
         return false;
     });
-
-    // Pagination Logic
-    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
     return (
         <div className="container mt-4">
@@ -67,7 +54,7 @@ function LeafyVeg() {
                     value={searchTerm} 
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button className="btn btn-success" onClick={handleSearch}>Search</button>
+                <button className="btn btn-success" onClick={handleSearch}> <i class="fas fa-search"></i>Search</button>
             </div>
 
             {/* Filter Checkboxes */}
@@ -106,8 +93,8 @@ function LeafyVeg() {
 
             {/* Vegetable Cards */}
             <div className="row g-4">
-                {paginatedItems.length > 0 ? (
-                    paginatedItems.map((item, index) => (
+                {filteredItems.length > 0 ? (
+                    filteredItems.map((item, index) => (
                         <div key={index} className="col-md-4">
                             <div className="card shadow-sm border-success h-100">
                                 <img 
@@ -132,40 +119,6 @@ function LeafyVeg() {
                     <p className="text-center text-danger fw-bold">No items found</p>
                 )}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                    {/* Previous Button */}
-                    <button 
-                        className="btn btn-outline-success me-2" 
-                        onClick={() => setCurrentPage(currentPage - 1)} 
-                        disabled={currentPage === 1}
-                    >
-                        Prev
-                    </button>
-
-                    {/* Page Numbers */}
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button 
-                            key={index + 1}
-                            className={`btn mx-1 ${currentPage === index + 1 ? "btn-success" : "btn-outline-success"}`} 
-                            onClick={() => setCurrentPage(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-
-                    {/* Next Button */}
-                    <button 
-                        className="btn btn-outline-success ms-2" 
-                        onClick={() => setCurrentPage(currentPage + 1)} 
-                        disabled={currentPage === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
         </div>
     );
 }

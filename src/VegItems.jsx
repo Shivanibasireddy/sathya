@@ -8,9 +8,7 @@ function VegItems() {
     const vegItems = useSelector(state => state.products.vegItem); // Ensure correct state path
 
     const [filters, setFilters] = useState({ all: true, below100: false, above100: false });
-    const [pageNumber, setPageNumber] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
-    const perPage = 3;
     
     // Handle checkbox filters
     const handleFilterChange = (filter) => {
@@ -43,24 +41,12 @@ function VegItems() {
 
     // Search Function
     const handleSearch = () => {
-        setPageNumber(1); // Reset to first page on search
+        // Perform search filtering
     };
 
     const searchedItems = filteredItems.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    // Pagination Logic
-    const totalPages = Math.ceil(searchedItems.length / perPage);
-    const pageStartIndex = (pageNumber - 1) * perPage;
-    const pageEndIndex = pageStartIndex + perPage;
-    const currentItems = searchedItems.slice(pageStartIndex, pageEndIndex);
-
-    const handlePage = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setPageNumber(page);
-        }
-    };
 
     return (
         <div className="container mt-4">
@@ -120,8 +106,8 @@ function VegItems() {
 
             {/* Vegetable List */}
             <div className="row g-4">
-                {currentItems.length > 0 ? (
-                    currentItems.map((item, index) => (
+                {searchedItems.length > 0 ? (
+                    searchedItems.map((item, index) => (
                         <div key={index} className="col-md-4">
                             <div className="card shadow-sm border-success h-100">
                                 <img 
@@ -145,35 +131,6 @@ function VegItems() {
                 ) : (
                     <p className="text-center text-danger fw-bold">No items found</p>
                 )}
-            </div>
-
-            {/* Pagination */}
-            <div className="d-flex justify-content-center align-items-center mt-4">
-                <button 
-                    className="btn btn-outline-primary mx-2" 
-                    disabled={pageNumber === 1} 
-                    onClick={() => handlePage(pageNumber - 1)}
-                >
-                    Prev
-                </button>
-
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button 
-                        key={index} 
-                        className={`btn mx-1 ${pageNumber === index + 1 ? "btn-primary" : "btn-outline-primary"}`}
-                        onClick={() => handlePage(index + 1)}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-
-                <button 
-                    className="btn btn-outline-primary mx-2" 
-                    disabled={pageNumber === totalPages} 
-                    onClick={() => handlePage(pageNumber + 1)}
-                >
-                    Next
-                </button>
             </div>
         </div>
     );
